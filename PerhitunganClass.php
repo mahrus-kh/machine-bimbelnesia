@@ -51,14 +51,4 @@ class PerhitunganClass
         }
         return TRUE;
     }
-    public function cepat()
-    {
-     $awal = microtime(true);
-        for ($i=0;$i<1000000;$i++){
-           // $halo[] = $i;
-            echo $i . " ";
-        }
-        //var_dump($i);
-        return microtime(true)-$awal;
-    }
 }

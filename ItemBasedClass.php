@@ -10,39 +10,40 @@ class ItemBasedClass
         }
         return $koneksi;
     }
-    public function user() //mengambil id_user yang ada di tb_detail_rating
+
+    public function user() //mengambil user_id yang ada di tb_rating
     {
-        $tampil = $this->koneksi()->prepare("SELECT DISTINCT(id_user)FROM tb_detail_rating");
+        $tampil = $this->koneksi()->prepare("SELECT DISTINCT(user_id)FROM tb_rating");
         $tampil->execute();
         $tampil->setFetchMode(PDO::FETCH_ASSOC);
         if (count($tampil)>0){
             while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                $user[] =  $data['id_user'];
+                $user[] =  $data['user_id'];
             }
         }
         return $user;
     }
-    public function lbb() // mengambil id_lbb yang ada di tb_detail_rating
+    public function lbb() // mengambil lbb_id yang ada di tb_rating
     {
-        $tampil = $this->koneksi()->prepare("SELECT DISTINCT(id_lbb) FROM tb_detail_rating");
+        $tampil = $this->koneksi()->prepare("SELECT DISTINCT(lbb_id) FROM tb_rating");
         $tampil->execute();
         $tampil->setFetchMode(PDO::FETCH_ASSOC);
         if (count($tampil)>0){
             while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                $lbb[] = $data['id_lbb'];
+                $lbb[] = $data['lbb_id'];
             }
         }
         return $lbb;
     }
-    public function rata_rating_user($id_user)// menghitung rata2 rating user terhadap semua lbb yang ada di tb_detail_rating
+    public function rata_rating_user($user_id)// menghitung rata2 rating user terhadap semua lbb yang ada di tb_rating
     {
-        $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=:id_user");
-        $tampil->bindParam(':id_user',$id_user);
+        $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id");
+        $tampil->bindParam(':user_id',$user_id);
         $tampil->execute();
         $tampil->setFetchMode(PDO::FETCH_ASSOC);
         if (count($tampil)>0){
             while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-               $rata[] = $data['detail_rating'];
+               $rata[] = $data['rating'];
             }
             $rata_rating_user = 0;
             for ($i=0;$i<count($rata);$i++){
@@ -52,46 +53,7 @@ class ItemBasedClass
         }
         return $rata_rating_user;
     }
-    public function ambil_sama() //mengambil nilai rating dari user = nilai rating lbb1 DAN user = nilai rating lbb2 / yang sama
-    {
-        $rating_user_lbb1 = [];
-        $rating_user_lbb2 = [];
-        $user = [];
-        $return = [];
 
-       $id_user = $this->user();
-       $id_lbb = $this->lbb();
-
-        for($i=0;$i<count($id_user);$i++){
-
-        }
-
-        $lbb1 = 0;
-        $lbb2 = 0;
-        $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=1 AND id_lbb=1");
-        $tampil->execute();
-        $tampil->setFetchMode(PDO::FETCH_ASSOC);
-        if (count($tampil)>0){
-            while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                $lbb1 =  $data['detail_rating'];
-            }
-        }
-        $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=1 AND id_lbb=2");
-        $tampil->execute();
-        $tampil->setFetchMode(PDO::FETCH_ASSOC);
-        if (count($tampil)>0){
-            while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                $lbb2 =  $data['detail_rating'];
-            }
-        }
-        if (!empty($lbb1) && !empty($lbb2)){ //cek apakah kedua lbb sudah dirating user
-            $rating_user_lbb1 [] = $lbb1; // memasukkan nilai rating user ke lbb 1 kedalam array
-            $rating_user_lbb2 [] = $lbb2;// memasukkan nilai rating user ke lbb 2 kedalam array
-            array_push($return,$rating_user_lbb1);
-            array_push($return,$rating_user_lbb2);
-        }
-        return $return;
-    }
     public function coba_ambil_one() //mengambil nilai rating dari user = nilai rating lbb1 DAN user = nilai rating lbb2 / yang sama
     {
         $rating_user_lbb1 = [];
@@ -101,37 +63,37 @@ class ItemBasedClass
         $user_merating = [];
         $return = [];
 
-        $id_user = $this->user();
-        $id_lbb = $this->lbb();
+        $user_id = $this->user();
+        $lbb_id = $this->lbb();
 
-        for($i=0;$i<count($id_user);$i++){
+        for($i=0;$i<count($user_id);$i++){
             for ($a=0;$a<1;$a++){
                 $nilai_lbb1 = 0;
                 $nilai_lbb2 = 0;
 
-                $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=:id_user AND id_lbb=1");
-                $tampil->bindParam(':id_user',$id_user[$i]);
+                $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id AND lbb_id=1");
+                $tampil->bindParam(':user_id',$user_id[$i]);
                 $tampil->execute();
                 $tampil->setFetchMode(PDO::FETCH_ASSOC);
                 if (count($tampil)>0){
                     while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                        $nilai_lbb1 =  $data['detail_rating'];
+                        $nilai_lbb1 =  $data['rating'];
 
                     }
                 }
-                $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=:id_user AND id_lbb=2");
-                $tampil->bindParam(':id_user',$id_user[$i]);
+                $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id AND lbb_id=2");
+                $tampil->bindParam(':user_id',$user_id[$i]);
                 $tampil->execute();
                 $tampil->setFetchMode(PDO::FETCH_ASSOC);
                 if (count($tampil)>0){
                     while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                        $nilai_lbb2 =  $data['detail_rating'];
+                        $nilai_lbb2 =  $data['rating'];
                     }
                 }
                 if (!empty($nilai_lbb1) && !empty($nilai_lbb2)){
                     $lbb1 [] = $nilai_lbb1;
                     $lbb2 [] = $nilai_lbb2;
-                    $user_merating [] = $id_user[$i];
+                    $user_merating [] = $user_id[$i];
                 }
             }
         }
@@ -141,7 +103,7 @@ class ItemBasedClass
 
         return $return;
     }
-    public function coba_ambil($id_lbb1, $id_lbb2) //mengambil nilai rating dari user = nilai rating lbb1 DAN user = nilai rating lbb2 / yang sama
+    public function coba_ambil($lbb_id1, $lbb_id2) //mengambil nilai rating dari user = nilai rating lbb1 DAN user = nilai rating lbb2 / yang sama
     {
         $rating_user_lbb1 = [];
         $rating_user_lbb2 = [];
@@ -150,38 +112,38 @@ class ItemBasedClass
         $user_merating = [];
         $return = [];
 
-        $id_user = $this->user();
+        $user_id = $this->user();
 
-        for($i=0;$i<count($id_user);$i++){
+        for($i=0;$i<count($user_id);$i++){
             for ($a=0;$a<1;$a++){
                 $nilai_lbb1 = 0;
                 $nilai_lbb2 = 0;
 
-                $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=:id_user AND id_lbb=:id_lbb1");
-                $tampil->bindParam(':id_user',$id_user[$i]);
-                $tampil->bindParam('id_lbb1',$id_lbb1);
+                $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id AND lbb_id=:lbb_id1");
+                $tampil->bindParam(':user_id',$user_id[$i]);
+                $tampil->bindParam('lbb_id1',$lbb_id1);
                 $tampil->execute();
                 $tampil->setFetchMode(PDO::FETCH_ASSOC);
                 if (count($tampil)>0){
                     while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                        $nilai_lbb1 =  $data['detail_rating'];
+                        $nilai_lbb1 =  $data['rating'];
 
                     }
                 }
-                $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=:id_user AND id_lbb=:id_lbb2");
-                $tampil->bindParam(':id_user',$id_user[$i]);
-                $tampil->bindParam(':id_lbb2',$id_lbb2);
+                $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id AND lbb_id=:lbb_id2");
+                $tampil->bindParam(':user_id',$user_id[$i]);
+                $tampil->bindParam(':lbb_id2',$lbb_id2);
                 $tampil->execute();
                 $tampil->setFetchMode(PDO::FETCH_ASSOC);
                 if (count($tampil)>0){
                     while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                        $nilai_lbb2 =  $data['detail_rating'];
+                        $nilai_lbb2 =  $data['rating'];
                     }
                 }
                 if (!empty($nilai_lbb1) && !empty($nilai_lbb2)){
                     $lbb1 [] = $nilai_lbb1;
                     $lbb2 [] = $nilai_lbb2;
-                    $user_merating [] = $id_user[$i];
+                    $user_merating [] = $user_id[$i];
                 }
             }
         }
@@ -191,9 +153,9 @@ class ItemBasedClass
 
         return $return;
     }
-    public function sim_atas($id_lbb1, $id_lbb2) // menghitung nilai rumus atas similiarity
+    public function sim_atas($lbb_id1, $lbb_id2) // menghitung nilai rumus atas similiarity
     {
-        $data = $this->coba_ambil($id_lbb1, $id_lbb2);
+        $data = $this->coba_ambil($lbb_id1, $lbb_id2);
         $rating_lbb1 = $data[0];
         $rating_lbb2 = $data[1];
         $user_merating = $data [2];
@@ -202,139 +164,119 @@ class ItemBasedClass
         for ($i=0;$i<count($user_merating);$i++){ //hitung nilai diulang sebanyak yang sama -> rating_lbb1 / rating_lbb1
             $sim_atas = $sim_atas + (($rating_lbb1[$i]-$this->rata_rating_user($user_merating[$i]))*($rating_lbb2[$i]-$this->rata_rating_user($user_merating[$i])));
         }
-
         return $sim_atas;
     }
 
-    public function sim_bawah($id_lbb1, $id_lbb2)
+    public function sim_bawah($lbb_id1, $lbb_id2)
     {
-        $data = $this->coba_ambil($id_lbb1, $id_lbb2);
+        $data = $this->coba_ambil($lbb_id1, $lbb_id2);
         $rating_lbb1 = $data[0];
         $rating_lbb2 = $data[1];
         $user_merating = $data[2];
 
-        $sim_bawah = 0;
-        $bawah1 =0;
-        $bawah2 = 0;
-        for ($i=0;$i<count($user_merating);$i++){
-            $bawah1 = $bawah1 + (pow(($rating_lbb1[$i]-$this->rata_rating_user($user_merating[$i])),2));
-            $bawah2 = $bawah2 + (pow(($rating_lbb2[$i]-$this->rata_rating_user($user_merating[$i])),2));
+        if (empty($user_merating)){
+            $sim_bawah = null;
+        } else {
+            $bawah1 =0;
+            $bawah2 = 0;
+            for ($i=0;$i<count($user_merating);$i++){
+                $bawah1 = $bawah1 + (pow(($rating_lbb1[$i]-$this->rata_rating_user($user_merating[$i])),2));
+                $bawah2 = $bawah2 + (pow(($rating_lbb2[$i]-$this->rata_rating_user($user_merating[$i])),2));
+            }
+            $sim_bawah = sqrt($bawah1)*sqrt($bawah2);
         }
-        $bawah1 = sqrt($bawah1);
-        $bawah2 = sqrt($bawah2);
-        $sim_bawah = $bawah1*$bawah2;
-
-        return $sim_bawah;
+        return  $sim_bawah;
     }
     public function similiarity()
     {
         $similiarity = [];
-        $id_lbb  = $this->lbb();
-        for ($i=0;$i<count($id_lbb);$i++){
-            for ($j=$i;$j<count($id_lbb);$j++){
+        $lbb_id  = $this->lbb();
+        for ($i=0;$i<count($lbb_id);$i++){
+            for ($j=$i;$j<count($lbb_id);$j++){
                 if ($i == $j){
                     continue;
                 }
-                $similiarity [] = $this->sim_atas($id_lbb[$i],$id_lbb[$j]) / $this->sim_bawah($id_lbb[$i],$id_lbb[$j]);
+
+                $sim_bawah = $this->sim_bawah($lbb_id[$i],$lbb_id[$j]);
+                if ($sim_bawah === null){
+                    continue;
+                }else {
+                    $sim_atas = $this->sim_atas($lbb_id[$i],$lbb_id[$j]);
+                    $similiarity [] = $sim_atas / $sim_bawah;
+                }
             }
         }
         return $similiarity;
     }
     public function similiarity_save()
     {
-        $id_lbb  = $this->lbb();
-        for ($i=0;$i<count($id_lbb);$i++){
-            for ($j=$i;$j<count($id_lbb);$j++){
-                $similiarity = 0;
+        $lbb_id  = $this->lbb();
+        for ($i=0;$i<count($lbb_id);$i++){
+            for ($j=$i;$j<count($lbb_id);$j++){
+
                 if ($i == $j){
                     continue;
                 }
-                $similiarity = $this->sim_atas($id_lbb[$i],$id_lbb[$j]) / $this->sim_bawah($id_lbb[$i],$id_lbb[$j]);
-                $save = $this->koneksi()->prepare("INSERT INTO tb_itembased_sim (similiarity,id_lbb1,id_lbb2) VALUES (:similiarity,:id_lbb1,:id_lbb2)");
-                $save->bindParam(':similiarity',$similiarity);
-                $save->bindParam(':id_lbb1',$id_lbb[$i]);
-                $save->bindParam(':id_lbb2',$id_lbb[$j]);
-                $save->execute();
+
+                $sim_bawah = $this->sim_bawah($lbb_id[$i],$lbb_id[$j]);
+                if ($sim_bawah == null){
+                    continue;
+                }else {
+                    $sim_atas = $this->sim_atas($lbb_id[$i],$lbb_id[$j]);
+                    $similiarity = $sim_atas / $sim_bawah;
+
+                    $save = $this->koneksi()->prepare("INSERT INTO tb_itembased_sim (lbb1_id,lbb2_id,similiarity) VALUES (:lbb1_id,:lbb2_id,:similiarity)");
+                    $save->bindParam(':lbb1_id',$lbb_id[$i]);
+                    $save->bindParam(':lbb2_id',$lbb_id[$j]);
+                    $save->bindParam(':similiarity',$similiarity);
+                    $save->execute();
+                }
             }
         }
         return TRUE;
     }
-    public function coba()
+
+    public function lbb_id_kosong($user_id)
     {
-        $id_user = $this->user(); 
-        $id_lbb = $this->lbb();
-//
-        for($i=0;$i<count($id_user);$i++){
-            for($a=0;$a<count($id_lbb);$a++){
-
-                echo $id_user[$i] . " " . $id_lbb[$a] . "|";
-
-            }
-        }
-       return TRUE;
-    }
-    public function lagi()
-    {
-     $id_lbb = $this->lbb();
-     $id_lbb2 = $this->lbb();
-     for ($i=0;$i<count($id_lbb);$i++){
-         for ($j=0;$j<count($id_lbb);$j++){
-             echo $id_lbb[$i] . " : " . $id_lbb[$j+1] . " | ";
-
-         }
-     }
-    }
-
-    public function cepat()
-    {
-        $a = microtime(true);
-        for ($i=0;$i<1000000;$i++){
-            echo $i . " ";
-        }
-        return microtime(true)-$a;
-    }
-
-    public function id_lbb_kosong($id_user)
-    {
-        $id_lbb_kosong = [];
-        $id_lbb = $this->lbb();
-        for ($i=0;$i<count($id_lbb);$i++){
+        $lbb_id_kosong = [];
+        $lbb_id = $this->lbb();
+        for ($i=0;$i<count($lbb_id);$i++){
             $kosong = 0;
-            $tampil = $this->koneksi()->prepare("SELECT id_detail_rating FROM tb_detail_rating WHERE id_user=:id_user AND id_lbb =:id_lbb");
-            $tampil->bindParam(':id_user',$id_user);
-            $tampil->bindParam(':id_lbb',$id_lbb[$i]);
+            $tampil = $this->koneksi()->prepare("SELECT id FROM tb_rating WHERE user_id=:user_id AND lbb_id =:lbb_id");
+            $tampil->bindParam(':user_id',$user_id);
+            $tampil->bindParam(':lbb_id',$lbb_id[$i]);
             $tampil->execute();
             $tampil->setFetchMode(PDO::FETCH_ASSOC);
             if (count($tampil)>0){
                 while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                    $kosong =  $id_lbb[$i];
+                    $kosong =  $lbb_id[$i];
                 }
             }
             if ($kosong == 0){
-                $id_lbb_kosong [] = $id_lbb[$i];
+                $lbb_id_kosong [] = $lbb_id[$i];
             }
         }
-        return $id_lbb_kosong;
+        return $lbb_id_kosong;
     }
-    public function detail_rating_user_lbb($id_user, $id_lbb){
-        $tampil = $this->koneksi()->prepare("SELECT detail_rating FROM tb_detail_rating WHERE id_user=:id_user AND id_lbb=:id_lbb");
-        $tampil->bindParam(':id_user',$id_user);
-        $tampil->bindParam(':id_lbb',$id_lbb);
+    public function rating_user_lbb($user_id, $lbb_id){ //mengambil nulai rating user_i terhadap lbb j
+        $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id AND lbb_id=:lbb_id");
+        $tampil->bindParam(':user_id',$user_id);
+        $tampil->bindParam(':lbb_id',$lbb_id);
         $tampil->execute();
         $tampil->setFetchMode(PDO::FETCH_ASSOC);
         if (count($tampil)>0){
             while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                $detail_rating_user_lbb =  $data['detail_rating'];
+                $rating_user_lbb =  $data['rating'];
             }
         }
-        return $detail_rating_user_lbb;
+        return $rating_user_lbb;
     }
-    public function similiarity_lbb($id_lbb_kosong , $id_lbbi) //mengambil similiarity antar lbb
+    public function similiarity_lbb($lbb_id_kosong , $lbb_idi) //mengambil similiarity antar lbb
     {
-        $sql = "SELECT similiarity FROM tb_itembased_sim WHERE id_lbb1=:id_lbb_kosong AND id_lbb2=:id_lbbi OR id_lbb1=:id_lbbi AND id_lbb2=:id_lbb_kosong";
+        $sql = "SELECT similiarity FROM tb_itembased_sim WHERE lbb1_id=:lbb_id_kosong AND lbb2_id=:lbb_idi OR lbb1_id=:lbb_idi AND lbb2_id=:lbb_id_kosong";
         $tampil = $this->koneksi()->prepare($sql);
-        $tampil->bindParam(':id_lbb_kosong',$id_lbb_kosong);
-        $tampil->bindParam(':id_lbbi',$id_lbbi);
+        $tampil->bindParam(':lbb_id_kosong',$lbb_id_kosong);
+        $tampil->bindParam(':lbb_idi',$lbb_idi);
         $tampil->execute();
         $tampil->setFetchMode(PDO::FETCH_ASSOC);
         if (count($tampil)>0){
@@ -344,55 +286,55 @@ class ItemBasedClass
         }
         return $similiarity_lbb;
     }
-    public function pre_atas($id_user, $id_lbb_kosong)
+    public function pre_atas($user_id, $lbb_id_kosong)
     {
-        $id_lbb = [];
-        $tampil = $this->koneksi()->prepare("SELECT id_lbb FROM tb_detail_rating WHERE id_user=:id_user");
-        $tampil->bindParam(':id_user',$id_user);
+        $lbb_id = [];
+        $tampil = $this->koneksi()->prepare("SELECT lbb_id FROM tb_rating WHERE user_id=:user_id");
+        $tampil->bindParam(':user_id',$user_id);
         $tampil->execute();
         $tampil->setFetchMode(PDO::FETCH_ASSOC);
         if (count($tampil)>0){
             while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                $id_lbb [] =  $data['id_lbb'];
+                $lbb_id [] =  $data['lbb_id'];
             }
         }
 
         $pre_atas = 0;
-        for ($i=0;$i<count($id_lbb);$i++) {
-            $pre_atas = $pre_atas + ($this->detail_rating_user_lbb($id_user,$id_lbb[$i])*$this->similiarity_lbb($id_lbb_kosong,$id_lbb[$i]));
+        for ($i=0;$i<count($lbb_id);$i++) {
+            $pre_atas = $pre_atas + ($this->rating_user_lbb($user_id,$lbb_id[$i])*$this->similiarity_lbb($lbb_id_kosong,$lbb_id[$i]));
         }
         return $pre_atas;
     }
-    public function pre_bawah($id_user,$id_lbb_kosong)
+    public function pre_bawah($user_id,$lbb_id_kosong)
     {
 
-        $id_lbb = [];
-        $tampil = $this->koneksi()->prepare("SELECT id_lbb FROM tb_detail_rating WHERE id_user=:id_user");
-        $tampil->bindParam(':id_user',$id_user);
+        $lbb_id = [];
+        $tampil = $this->koneksi()->prepare("SELECT lbb_id FROM tb_rating WHERE user_id=:user_id");
+        $tampil->bindParam(':user_id',$user_id);
         $tampil->execute();
         $tampil->setFetchMode(PDO::FETCH_ASSOC);
         if (count($tampil)>0){
             while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
-                $id_lbb [] =  $data['id_lbb'];
+                $lbb_id [] =  $data['lbb_id'];
             }
         }
 
         $pre_bawah = 0;
-        for ($i=0;$i<count($id_lbb);$i++){
-            $pre_bawah = $pre_bawah + abs($this->similiarity_lbb($id_lbb_kosong,$id_lbb[$i]));
+        for ($i=0;$i<count($lbb_id);$i++){
+            $pre_bawah = $pre_bawah + abs($this->similiarity_lbb($lbb_id_kosong,$lbb_id[$i]));
         }
         return $pre_bawah;
     }
     public function prediksi()
     {
        $prediksi = [];
-       $id_user = $this->user();
+       $user_id = $this->user();
 
-       for ($i=0;$i<count($id_user);$i++){
-           $id_lbb_kosong = 0;
-           $id_lbb_kosong = $this->id_lbb_kosong($id_user[$i]);
-           for ($j=0;$j<count($id_lbb_kosong);$j++){
-               $prediksi [] = $this->pre_atas($id_user[$i],$id_lbb_kosong[$j]) / $this->pre_bawah($id_user[$i],$id_lbb_kosong[$j]);
+       for ($i=0;$i<count($user_id);$i++){
+           $lbb_id_kosong = 0;
+           $lbb_id_kosong = $this->lbb_id_kosong($user_id[$i]);
+           for ($j=0;$j<count($lbb_id_kosong);$j++){
+               $prediksi [] = "User " . $user_id[$i] . " - LBB " . $lbb_id_kosong[$j] . " = " .  $this->pre_atas($user_id[$i],$lbb_id_kosong[$j]) / $this->pre_bawah($user_id[$i],$lbb_id_kosong[$j]);
            }
        }
        return $prediksi;
@@ -400,7 +342,7 @@ class ItemBasedClass
     }
     
     //Tambahan
-    public function truncate_tb_itembase_sim()
+    public function truncate_tb_itembased_sim()
     {
         $del = $this->koneksi()->prepare("TRUNCATE TABLE tb_itembased_sim");
         return $del->execute();

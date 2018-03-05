@@ -4,21 +4,15 @@ $awal = microtime(true);
 
 $ItemBasedProses = New ItemBasedClass();
 
-//for ($i=0;$i<count($ItemBasedProses->user());$i++){
-//
-//    $id_user = $ItemBasedProses->user();
-//    echo $id_user[$i] . " : " . $ItemBasedProses->rata_rating_user($id_user[$i]) . " | ";
-//
-//}
+$ItemBasedProses->truncate_tb_itembased_sim();
 
-//var_dump($ItemBasedProses->sim_atas());
-//echo "  |  ";
-//var_dump($ItemBasedProses->sim_bawah());
-//echo "  |  ";
-$ItemBasedProses->truncate_tb_itembase_sim();
 $ItemBasedProses->similiarity_save();
+
 var_dump($ItemBasedProses->prediksi());
 
-echo " ";
-echo "    " . microtime(true)-$awal;
 
+//var_dump($ItemBasedProses->sim_atas(1,7));
+
+//var_dump($ItemBasedProses->sim_bawah(1,7));
+//
+//var_dump($ItemBasedProses->similiarity_lbb(1,7));

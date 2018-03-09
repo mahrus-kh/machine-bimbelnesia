@@ -1,7 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mahruskh
- * Date: 09/03/18
- * Time: 0:49
- */
+include "TermClass.php";
+$awal = microtime(true);
+$TermProses = New TermClass();
+
+var_dump($TermProses->merge_term());
+var_dump($TermProses->lagi());
+
+var_dump($TermProses->cut_term(12));
+
+//echo microtime(true) - $awal;

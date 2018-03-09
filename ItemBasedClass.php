@@ -347,4 +347,141 @@ class ItemBasedClass
         $del = $this->koneksi()->prepare("TRUNCATE TABLE tb_itembased_sim");
         return $del->execute();
     }
+
+    //versi full array => berikut dibawah
+
+    public function tabel_data()
+    {
+        $tampil = $this->koneksi()->prepare("SELECT id FROM tb_users");
+        $tampil->execute();
+        $tampil->setFetchMode(PDO::FETCH_ASSOC);
+        if (count($tampil)>0){
+            while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
+                $user_id_array [] =  $data['id'];
+            }
+        }
+
+        $tampil = $this->koneksi()->prepare("SELECT id FROM tb_lbb");
+        $tampil->execute();
+        $tampil->setFetchMode(PDO::FETCH_ASSOC);
+        if (count($tampil)>0){
+            while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
+                $lbb_id_array [] =  $data['id'];
+            }
+        }
+
+        foreach ($user_id_array as $user_id){
+            foreach ($lbb_id_array as $lbb_id){
+                $rating = "0";
+                $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id AND lbb_id=:lbb_id");
+                $tampil->bindParam(':user_id', $user_id);
+                $tampil->bindParam(':lbb_id', $lbb_id);
+                $tampil->execute();
+                $tampil->setFetchMode(PDO::FETCH_ASSOC);
+                if (count($tampil)>0){
+                    while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
+                       $rating = $data['rating'];
+                    }
+                }
+                $tabel_data [$user_id] [$lbb_id] = $rating;
+            }
+        }
+
+        return $tabel_data;
+    }
+
+    public function tabel_data_balik() //versi transpose
+    {
+        $tampil = $this->koneksi()->prepare("SELECT id FROM tb_users");
+        $tampil->execute();
+        $tampil->setFetchMode(PDO::FETCH_ASSOC);
+        if (count($tampil)>0){
+            while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
+                $user_id_array [] =  $data['id'];
+            }
+        }
+
+        $tampil = $this->koneksi()->prepare("SELECT id FROM tb_lbb");
+        $tampil->execute();
+        $tampil->setFetchMode(PDO::FETCH_ASSOC);
+        if (count($tampil)>0){
+            while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
+                $lbb_id_array [] =  $data['id'];
+            }
+        }
+
+        foreach ($user_id_array as $user_id){
+            foreach ($lbb_id_array as $lbb_id){
+                $rating = "0";
+                $tampil = $this->koneksi()->prepare("SELECT rating FROM tb_rating WHERE user_id=:user_id AND lbb_id=:lbb_id");
+                $tampil->bindParam(':user_id', $user_id);
+                $tampil->bindParam(':lbb_id', $lbb_id);
+                $tampil->execute();
+                $tampil->setFetchMode(PDO::FETCH_ASSOC);
+                if (count($tampil)>0){
+                    while ($data=$tampil->fetch(PDO::FETCH_ORI_NEXT)){
+                        $rating = $data['rating'];
+                    }
+                }
+                $tabel_data [$lbb_id] [$user_id] = $rating;
+            }
+        }
+        return $tabel_data;
+    }
+
+    public function rata_user() //menghitung rata-rata rating user terhadap setiap lbb yang di rating
+    {
+        $tabel_data = $this->tabel_data();
+
+        foreach ($tabel_data as $id_user => $lbb_array){
+            $rata = [];
+            foreach ($lbb_array as $rating) {
+                if ($rating > 0){
+                    $rata [] = $rating;
+                }
+            }
+           if ($rata){
+               $rata_user [$id_user] = array_sum($rata) / count($rata);
+           }
+        }
+
+        return $rata_user;
+    }
+
+    public function hitung_similariy()
+    {
+        $tabel_data = $this->tabel_data_balik();
+        $rata_user  = $this->rata_user();
+
+//        for ($i=0;$i<count($tabel_data);$i++){
+//            for ($j=$i;$j<count($tabel_data);$j++){
+//                $halo [] = $tabel_data[$i][$j];
+//            }
+//        }
+
+        foreach ($tabel_data as $lbb_id_i =>  $rating_array){
+            foreach ($tabel_data as $lbb_id_j => $rating_array){
+
+                if ($lbb_id_i == $lbb_id_j){
+                    continue;
+                }
+
+                $sim_atas = 0;
+
+                foreach ($rating_array as $user_id => $rating){
+                    if ($rating == 0 || $tabel_data [$lbb_id_j] [$user_id] == 0){
+                        continue;
+                    }
+
+                    $sim_atas = $sim_atas + (($rating-$rata_user[$user_id])*($tabel_data[$lbb_id_j][$user_id]-$rata_user[$user_id]));
+                }
+
+                return $sim_atas;
+
+            }
+        }
+
+//        return $halo;
+    }
+
 }

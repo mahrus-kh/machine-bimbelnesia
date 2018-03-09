@@ -4,11 +4,14 @@ $awal = microtime(true);
 
 $ItemBasedProses = New ItemBasedClass();
 
-$ItemBasedProses->truncate_tb_itembased_sim();
+//$ItemBasedProses->truncate_tb_itembased_sim();
 
-$ItemBasedProses->similiarity_save();
+//$ItemBasedProses->similiarity_save();
 
-var_dump($ItemBasedProses->prediksi());
+//var_dump($ItemBasedProses->prediksi());
+
+//var_dump($ItemBasedProses->tabel_data_balik());
+var_dump($ItemBasedProses->hitung_similariy());
 
 
 //var_dump($ItemBasedProses->sim_atas(1,7));

@@ -202,7 +202,7 @@ class ItemBasedClass
                     continue;
                 }else {
                     $sim_atas = $this->sim_atas($lbb_id[$i],$lbb_id[$j]);
-                    $similiarity [] = $sim_atas / $sim_bawah;
+                    $similiarity [] = $lbb_id[$i] . " - " . $lbb_id[$j] . " = " . $sim_atas / $sim_bawah;
                 }
             }
         }
@@ -448,40 +448,66 @@ class ItemBasedClass
         return $rata_user;
     }
 
+    public function lihat_isi()
+    {
+        $data = $this->tabel_data_balik();
+
+        return $data[1];
+    }
+
+    public function mainlagi()
+    {
+        for ($i=1;$i<=9;$i++){
+            for ($j=1;$j<=9;$j++){
+                if ($i == $j || isset($halo[$j][$i])){
+                    continue;
+                }
+
+                $halo [$i] [$j] = $i . " - " . $j;
+            }
+        }
+
+        return $halo;
+
+    }
+
     public function hitung_similariy()
     {
         $tabel_data = $this->tabel_data_balik();
         $rata_user  = $this->rata_user();
 
-//        for ($i=0;$i<count($tabel_data);$i++){
-//            for ($j=$i;$j<count($tabel_data);$j++){
-//                $halo [] = $tabel_data[$i][$j];
-//            }
-//        }
-
         foreach ($tabel_data as $lbb_id_i =>  $rating_array){
             foreach ($tabel_data as $lbb_id_j => $rating_array){
 
-                if ($lbb_id_i == $lbb_id_j){
+                if ($lbb_id_i == $lbb_id_j || isset($similarity[$lbb_id_j][$lbb_id_i])){
                     continue;
                 }
 
                 $sim_atas = 0;
+                $bawah1 = 0;
+                $bawah2 = 0;
+                $sim_bawah = 0;
 
                 foreach ($rating_array as $user_id => $rating){
-                    if ($rating == 0 || $tabel_data [$lbb_id_j] [$user_id] == 0){
+                    if ($tabel_data[$lbb_id_i][$user_id] == 0 || $tabel_data[$lbb_id_j][$user_id] == 0){
                         continue;
                     }
+                    $sim_atas = $sim_atas + (($tabel_data[$lbb_id_i][$user_id]-$rata_user[$user_id])*($tabel_data[$lbb_id_j][$user_id]-$rata_user[$user_id]));
+                    $bawah1 = $bawah1 + (pow($tabel_data[$lbb_id_i][$user_id]-$rata_user[$user_id],2));
+                    $bawah2 = $bawah2 + (pow($tabel_data[$lbb_id_j][$user_id]-$rata_user[$user_id],2));
+                    $sim_bawah = sqrt($bawah1)*sqrt($bawah2);
 
-                    $sim_atas = $sim_atas + (($rating-$rata_user[$user_id])*($tabel_data[$lbb_id_j][$user_id]-$rata_user[$user_id]));
+                }
+                if ($sim_bawah == 0){
+                    continue;
                 }
 
-                return $sim_atas;
-
+                $similarity [$lbb_id_i][$lbb_id_j] = $sim_atas / $sim_bawah;
+//                $similarity [] = $lbb_id_i . " - " . $lbb_id_j . " = " .  $sim_atas / $sim_bawah;
+//                return $halo;
             }
         }
-
-//        return $halo;
+        return $similarity;
     }
 
 }

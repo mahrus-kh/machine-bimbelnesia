@@ -1,6 +1,5 @@
 <?php
 include "ItemBasedClass.php";
-$awal = microtime(true);
 
 $ItemBasedProses = New ItemBasedClass();
 
@@ -10,9 +9,15 @@ $ItemBasedProses = New ItemBasedClass();
 
 //var_dump($ItemBasedProses->prediksi());
 
-//var_dump($ItemBasedProses->tabel_data_balik());
-var_dump($ItemBasedProses->hitung_similariy());
+$awal = microtime(true);
+var_dump($ItemBasedProses->similiarity());
+$cara1 = microtime(true) - $awal;
 
+$awal = microtime(true);
+var_dump($ItemBasedProses->hitung_similariy());
+$cara2 = microtime(true) - $awal;
+
+echo "Cara 1 : " . $cara1  . " | " . "Cara 2 : " . $cara2;
 
 //var_dump($ItemBasedProses->sim_atas(1,7));
 
